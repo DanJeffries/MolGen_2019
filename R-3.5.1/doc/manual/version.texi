@@ -1,4 +1,0 @@
-@set VERSIONno 3.5.1
-@set VERSION 3.5.1 (2018-07-02)
-@set RWVERSION R-3.5.1
-@afourpaper
