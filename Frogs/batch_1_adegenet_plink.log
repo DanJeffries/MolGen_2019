@@ -1,0 +1,28 @@
+PLINK v1.90b3.39 64-bit (4 Aug 2016)
+Options in effect:
+  --allow-extra-chr
+  --out batch_1_adegenet_plink
+  --recode A
+  --vcf batch_1.vcf
+
+Hostname: Dans-Ubuntu-UNIL
+Working directory: /home/djeffrie/Data/MolGen_2019/Frogs
+Start time: Tue Sep  3 17:27:14 2019
+
+Random number seed: 1567524434
+32076 MB RAM detected; reserving 16038 MB for main workspace.
+--vcf: batch_1_adegenet_plink-temporary.bed +
+batch_1_adegenet_plink-temporary.bim + batch_1_adegenet_plink-temporary.fam
+written.
+2430 variants loaded from .bim file.
+120 people (0 males, 0 females, 120 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to batch_1_adegenet_plink.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 120 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.85261.
+2430 variants and 120 people pass filters and QC.
+Note: No phenotypes present.
+--recode A to batch_1_adegenet_plink.raw ... done.
+
+End time: Tue Sep  3 17:27:14 2019
