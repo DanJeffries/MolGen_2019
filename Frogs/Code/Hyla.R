@@ -7,40 +7,16 @@ library(hierfstat)
 ## set working directory
 setwd("~/Data/MolGen_2019/Frogs/Data/")
 
-## import vcf
-hyla_vcf <- read.vcf("batch_1.vcf", )
+## import from fstat
 
-hyla_vcf$`1288_41`
+### TO DO ### Change the locus names
 
-## convert to genind
-hyla_genind <- loci2genind(hyla_vcf, c("NA", "."), ploidy = 2) #, na.alleles = "NA")
-
-hyla_genind$tab[1:30,1:10]
+hyla_genind <- read.fstat.data("hyla_FSTAT.dat")
 
 # add the population info 
 
-popcodes <- read.csv("popmap_kept_largepops_codes.txt", sep = "\t", header = F)
-pop(hyla_genind) <- popcodes$V2
-
-## explore genind object
-pop(hyla_genind)
-indNames(hyla_genind)
-
-## summary adegenet
-hyla_summ_adeg<-summary(hyla_genind)
-
-hyla_genind$tab[1:20,1:10]
-
-
-## explore adegenet summary
-
-hyla_summ$n   ## total number of samples
-hyla_summ$n.by.pop  ## number of samples per population
-hyla_summ$loc.n.all  ## number of alleles per locus
-hyla_summ$pop.n.all  ## number of alleles per population
-hyla_summ$NA.perc   ## percentage of missing data
-hyla_summ$Hobs  ## observed heterozygosity for all loci
-hyla_summ$Hexp  ## expected heterozygosity for all loci
+popcodes <- read.csv("populations_numeric_codes.txt", sep = "\t", header = F)
+hyla_genind$Pop <- popcodes$V2
 
 ## summary hierfstat
 
@@ -60,17 +36,64 @@ hyla_summ_hier$overall  ## Overall stats for the whole dataset
 
 ## Plot Ho vs Hs
 
-plot(hyla_summ_hier$perloc$Ho, hyla_summ_hier$perloc$Hs)
+plot(hyla_summ_hier$perloc$Ho, 
+     hyla_summ_hier$perloc$Hs,
+     pch = 16,
+     cex = 0.5,
+     xlab="Ho",
+     ylab="He",
+     main="Ho vs. He - Per locus")
+
 abline(0,1)
 
 ## Plot by population
 
-plot(colMeans(hyla_summ_hier$Ho, na.rm = T), colMeans(hyla_summ_hier$Hs, na.rm = T))
-text(colMeans(hyla_summ_hier$Ho, na.rm = T), colMeans(hyla_summ_hier$Hs, na.rm = T), levels(pop(hyla)), pos = 1)
+plot(colMeans(hyla_summ_hier$Ho, na.rm = T), 
+     colMeans(hyla_summ_hier$Hs, na.rm = T),
+     pch = 16,
+     cex = 0.75,
+     xlab="Ho",
+     ylab="He",
+     main="Ho vs. He - populations")
+
+text(colMeans(hyla_summ_hier$Ho, na.rm = T), 
+     colMeans(hyla_summ_hier$Hs, na.rm = T), 
+     unique(hyla_genind$Pop), 
+     pos = 1)
+
 abline(0,1)
 
+?plot
 
 ## Test isolation by distance
+
+## adegenet?
+
+hyla_genind_adegenet <- adegenet::read.fstat("hyla_FSTAT.dat")
+pop(hyla_genind_adegenet) <- popcodes$V2
+
+Hyla_lat_long <- read.csv("Hyla_coordinates.tsv", sep = "\t")
+
+hyla_genpop <- genind2genpop(hyla_genind_adegenet)
+
+Dgen <- dist.genpop(hyla_genpop, method = 2)
+Dgeo <- dist(Hyla_lat_long)  ## can I use this with hierfstat?
+
+ibd <- mantel.randtest(Dgen, Dgeo)
+
+ibd
+
+plot(ibd)
+
+plot(Dgeo, Dgen)
+abline(lm(Dgen~Dgeo))
+
+
+
+## First calclate the pairwise FSTs between each combination of populations.
+
+ppfst.hyla_genind<-pairwise.neifst(hyla_genind)
+
 
 ## make dataframe with populations as rownames
 
@@ -78,8 +101,11 @@ row.names(hyla_genind$tab)
 
 ## PCA
 
-pcaSNP<-indpca(hyla_genind,ind.labels=pop(hyla_genind))
-plot(pcaSNP) #, col=popcols,eigen=F)
+popcols = rep(rainbow(12))[hyla_genind$Pop]
+
+pcaSNP<-indpca(hyla_genind,ind.labels=hyla_genind$Pop)
+plot(pcaSNP, col=popcols,eigen=F, pch = 16)
+
 
 
 
